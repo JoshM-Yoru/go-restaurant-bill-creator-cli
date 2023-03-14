@@ -36,11 +36,12 @@ func (b *bill) format() string {
 
 	for _, item := range b.items {
 		fs += fmt.Sprintf("%-35v ...$%v \n", item.dish+":", item.price)
+		b.total += item.price
 	}
 
 	fs += fmt.Sprintf("%-35v ...$%0.2f \n", "Tip:", b.tip)
 
-	fs += fmt.Sprintf("%-35v ...$%0.2f", "Total:", b.total)
+	fs += fmt.Sprintf("%-35v ...$%0.2f", "Total:", b.total+b.tip)
 
 	return fs
 }
@@ -63,7 +64,6 @@ func calcSubtotal(b *bill) float64 {
 func (b *bill) addTip(tipPercentage float64) {
 	subtotal := calcSubtotal(b)
 	b.tip = subtotal * tipPercentage
-	b.total = subtotal + b.tip
 	b.promptOptions()
 }
 
@@ -73,7 +73,6 @@ func (b *bill) customTip() {
 	tipAmount, _ := getInput("How much would you like to tip in $:", reader)
 	if tip, err := strconv.ParseFloat(tipAmount, 64); err == nil {
 		b.tip = tip
-		b.total = calcSubtotal(b) + b.tip
 		b.promptOptions()
 	} else {
 		fmt.Println("\n\nInvalid Input. Try Again.\n")
