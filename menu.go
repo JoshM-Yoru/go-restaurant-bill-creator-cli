@@ -72,7 +72,7 @@ func (b *bill) selectMenuItemPrompt() {
 
 	}
 
-	fmt.Println("Your subtotal is: ", calcSubtotal(b))
+	fmt.Println("Your subtotal is: ", b.calcSubtotal())
 
 	if check {
 		b.promptOptions()

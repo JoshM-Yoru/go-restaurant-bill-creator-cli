@@ -38,7 +38,7 @@ func (b *bill) addTipPrompt() {
 func (b *bill) promptOptions() {
 	reader := bufio.NewReader(os.Stdin)
 
-	option, _ := getInput("Choose option (a - add more items, s - bill. t - add tip): ", reader)
+	option, _ := getInput("Choose option (a - add more items, t - add tip, s - show and save bill): ", reader)
 	fmt.Println(option)
 
 	switch option {
@@ -46,6 +46,7 @@ func (b *bill) promptOptions() {
 		b.selectMenuItemPrompt()
 	case "s":
 		fmt.Println(b.format())
+		b.saveBill()
 	case "t":
 		b.addTipPrompt()
 	default:
