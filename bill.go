@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 )
@@ -35,7 +36,6 @@ func (b *bill) format() string {
 
 	for _, item := range b.items {
 		fs += fmt.Sprintf("%-35v ...$%v \n", item.dish+":", item.price)
-		b.total += item.price
 	}
 
 	fs += fmt.Sprintf("%-35v ...$%0.2f \n", "Tip:", b.tip)
@@ -45,19 +45,25 @@ func (b *bill) format() string {
 	return fs
 }
 
-func (b *bill) calcSubtotal() float64 {
+func roundFloat(val float64, precision uint) float64 {
+	ratio := math.Pow(10, float64(precision))
+	return math.Round(val*ratio) / ratio
+}
+
+func calcSubtotal(b *bill) float64 {
 	var subtotal float64 = 0
 
 	for _, item := range b.items {
 		subtotal += item.price
 	}
 
-	return subtotal
+	return roundFloat(subtotal, 2)
 }
 
 func (b *bill) addTip(tipPercentage float64) {
-	b.tip = b.calcSubtotal() * tipPercentage
-	b.total = b.calcSubtotal() + b.tip
+	subtotal := calcSubtotal(b)
+	b.tip = subtotal * tipPercentage
+	b.total = subtotal + b.tip
 	b.promptOptions()
 }
 
@@ -67,7 +73,7 @@ func (b *bill) customTip() {
 	tipAmount, _ := getInput("How much would you like to tip in $:", reader)
 	if tip, err := strconv.ParseFloat(tipAmount, 64); err == nil {
 		b.tip = tip
-		b.total = b.calcSubtotal() + b.tip
+		b.total = calcSubtotal(b) + b.tip
 		b.promptOptions()
 	} else {
 		fmt.Println("\n\nInvalid Input. Try Again.\n")
